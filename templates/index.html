@@ -1,0 +1,243 @@
+
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <meta
+        name="description"
+        content="Simulateur interactif de mouvement des projectiles."
+    >
+
+    <title>PhysicsLab — Simulateur de physique</title>
+
+    <link
+        rel="stylesheet"
+        href="{{ url_for('static', filename='css/style.css') }}"
+    >
+
+    <script
+        src="{{ url_for('static', filename='js/app.js') }}"
+        defer
+    ></script>
+</head>
+
+<body>
+    <header class="topbar">
+        <a class="brand" href="/">
+            <span class="brand-icon">P</span>
+            PhysicsLab
+        </a>
+
+        <span class="status">
+            <span class="status-dot"></span>
+            Simulation locale
+        </span>
+    </header>
+
+    <main class="container">
+        <section class="hero">
+            <p class="eyebrow">LABORATOIRE DE MÉCANIQUE</p>
+            <h1>Comprends le mouvement.</h1>
+            <p class="hero-description">
+                Explore les trajectoires, expérimente avec les paramètres
+                et observe les lois de la physique en action.
+            </p>
+        </section>
+
+        <div class="workspace">
+            <aside class="panel controls-panel">
+                <div class="panel-heading">
+                    <div>
+                        <p class="eyebrow">EXPÉRIENCE 001</p>
+                        <h2>Paramètres</h2>
+                    </div>
+                    <span class="icon-circle">⚙</span>
+                </div>
+
+                <form id="simulation-form">
+                    <div class="field">
+                        <div class="field-heading">
+                            <label for="speed">Vitesse initiale</label>
+                            <output id="speed-value">25 m/s</output>
+                        </div>
+
+                        <input
+                            type="range"
+                            id="speed"
+                            min="1"
+                            max="100"
+                            step="1"
+                            value="25"
+                        >
+
+                        <div class="range-labels">
+                            <span>1 m/s</span>
+                            <span>100 m/s</span>
+                        </div>
+                    </div>
+
+                    <div class="field">
+                        <div class="field-heading">
+                            <label for="angle">Angle de lancement</label>
+                            <output id="angle-value">45°</output>
+                        </div>
+
+                        <input
+                            type="range"
+                            id="angle"
+                            min="1"
+                            max="89"
+                            step="1"
+                            value="45"
+                        >
+
+                        <div class="range-labels">
+                            <span>1°</span>
+                            <span>89°</span>
+                        </div>
+                    </div>
+
+                    <div class="field">
+                        <div class="field-heading">
+                            <label for="gravity">Gravité</label>
+                            <output id="gravity-value">9.81 m/s²</output>
+                        </div>
+
+                        <input
+                            type="range"
+                            id="gravity"
+                            min="0.1"
+                            max="30"
+                            step="0.01"
+                            value="9.81"
+                        >
+
+                        <div class="range-labels">
+                            <span>0.1 m/s²</span>
+                            <span>30 m/s²</span>
+                        </div>
+                    </div>
+
+                    <button class="primary-button" type="submit">
+                        <span>▶</span>
+                        Lancer la simulation
+                    </button>
+
+                    <button
+                        class="secondary-button"
+                        type="button"
+                        id="reset-button"
+                    >
+                        Réinitialiser
+                    </button>
+                </form>
+
+                <p class="model-note">
+                    <strong>Modèle idéal</strong>
+                    La résistance de l'air est ignorée. Le projectile
+                    retombe à la même hauteur que son point de départ.
+                </p>
+            </aside>
+
+            <section class="results-column">
+                <div class="stats-grid">
+                    <article class="stat-card">
+                        <span class="stat-label">Portée horizontale</span>
+                        <strong id="distance">—</strong>
+                        <span class="stat-unit">mètres</span>
+                    </article>
+
+                    <article class="stat-card">
+                        <span class="stat-label">Hauteur maximale</span>
+                        <strong id="height">—</strong>
+                        <span class="stat-unit">mètres</span>
+                    </article>
+
+                    <article class="stat-card">
+                        <span class="stat-label">Temps de vol</span>
+                        <strong id="time">—</strong>
+                        <span class="stat-unit">secondes</span>
+                    </article>
+                </div>
+
+                <section class="panel chart-panel">
+                    <div class="panel-heading chart-heading">
+                        <div>
+                            <h2>Trajectoire du projectile</h2>
+                            <p class="muted">
+                                Position horizontale et verticale
+                            </p>
+                        </div>
+
+                        <span class="legend">
+                            <span class="legend-dot"></span>
+                            Trajectoire
+                        </span>
+                    </div>
+
+                    <div class="canvas-container">
+                        <canvas
+                            id="trajectory"
+                            width="1000"
+                            height="500"
+                            aria-label="Graphique de la trajectoire du projectile"
+                            role="img"
+                        ></canvas>
+                    </div>
+
+                    <p id="chart-caption" class="chart-caption">
+                        Lance une simulation pour afficher la trajectoire.
+                    </p>
+                </section>
+
+                <section class="panel data-panel">
+                    <div class="panel-heading">
+                        <div>
+                            <h2>Données scientifiques</h2>
+                            <p class="muted">
+                                Échantillons de la trajectoire calculée
+                            </p>
+                        </div>
+
+                        <button id="export-button" class="small-button"
+                                type="button">
+                            Exporter CSV
+                        </button>
+                    </div>
+
+                    <div class="table-container">
+                        <table>
+                            <thead>
+                                <tr>
+                                    <th>Temps (s)</th>
+                                    <th>Position X (m)</th>
+                                    <th>Position Y (m)</th>
+                                    <th>Vitesse Y (m/s)</th>
+                                </tr>
+                            </thead>
+
+                            <tbody id="data-table">
+                                <tr>
+                                    <td colspan="4" class="empty-cell">
+                                        Aucune donnée disponible.
+                                    </td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </section>
+
+                <p id="error-message" class="error-message"
+                   role="alert" aria-live="polite"></p>
+            </section>
+        </div>
+
+        <footer>
+            <span>PhysicsLab</span>
+            <span>Physique · Mathématiques · Informatique</span>
+        </footer>
+    </main>
+</body>
+</html>
