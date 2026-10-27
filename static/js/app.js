@@ -27,20 +27,20 @@ const exportButton = document.querySelector("#export-button");
 let lastResult = null;
 let requestNumber = 0;
 
-function updateLabels() {
+const updateLabels = () =>{
     speedValue.textContent = `${speedInput.value} m/s`;
     angleValue.textContent = `${angleInput.value}°`;
     gravityValue.textContent = `${Number(gravityInput.value).toFixed(2)} m/s²`;
 }
 
-function formatNumber(value, decimals = 2) {
+const formatNumber = (value, decimals = 2) =>{
     return Number(value).toLocaleString("fr-CA", {
         minimumFractionDigits: decimals,
         maximumFractionDigits: decimals
     });
 }
 
-function clearCanvas(message = "Lance une simulation pour afficher la trajectoire.") {
+const clearCanvas = (message = "Lance une simulation pour afficher la trajectoire.") =>{
     ctx.clearRect(0, 0, canvas.width, canvas.height);
 
     ctx.fillStyle = "#91a0ba";
@@ -50,7 +50,7 @@ function clearCanvas(message = "Lance une simulation pour afficher la trajectoir
     ctx.fillText(message, canvas.width / 2, canvas.height / 2);
 }
 
-function drawTrajectory(points) {
+const  drawTrajectory =(points) =>{
     const width = canvas.width;
     const height = canvas.height;
 
@@ -179,7 +179,7 @@ function drawTrajectory(points) {
     ctx.fill();
 }
 
-function updateTable(points) {
+const updateTable =(points) =>{
     tableBody.replaceChildren();
 
     // Montrer au maximum 15 lignes pour éviter un tableau trop long.
@@ -210,7 +210,7 @@ function updateTable(points) {
     }
 }
 
-async function runSimulation(event) {
+const runSimulation = async(event) => {
     event?.preventDefault();
 
     const currentRequest = ++requestNumber;
@@ -276,7 +276,7 @@ async function runSimulation(event) {
     }
 }
 
-function resetSimulation() {
+const resetSimulation =() => {
     speedInput.value = "25";
     angleInput.value = "45";
     gravityInput.value = "9.81";
@@ -285,7 +285,7 @@ function resetSimulation() {
     runSimulation();
 }
 
-function exportCSV() {
+const exportCSV = () => {
     if (!lastResult) {
         errorMessage.textContent = "Lance une simulation avant l'exportation.";
         return;
